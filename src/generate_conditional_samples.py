@@ -82,6 +82,8 @@ def sample_model(
 
         with open(input_file) as f:
             for line in f:
+                output_file.write("=" * 79)
+                output_file.write(line + "\n")
                 context_tokens = enc.encode(line)
                 for _ in range(nsamples // batch_size):
                     out = sess.run(output, feed_dict={
@@ -89,7 +91,9 @@ def sample_model(
                     })[:, len(context_tokens):]
                     for i in range(batch_size):
                         text = enc.decode(out[i])
-                        output_file.write(repr(text) + "\n")
+                        text = str(text)
+                        text = re.sub (r'([^a-zA-Z ]+?)', '', text)
+                        output_file.write(text + "\n")
         
         output_file.close()
 
