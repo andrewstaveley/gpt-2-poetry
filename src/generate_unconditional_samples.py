@@ -18,7 +18,7 @@ def sample_model(
     temperature=1,
     top_k=0,
     top_p=0.0,
-    output_file="unconditional_output.txt"
+    output_file="output-random.txt"
 ):
     """
     Run the sample_model
@@ -40,7 +40,12 @@ def sample_model(
      special setting meaning no restrictions. 40 generally is a good value.
     :top_p=0.0 : Float value controlling diversity. Implements nucleus sampling,
      overriding top_k if set to a value > 0. A good setting is 0.9.
+    :output_file="output-random.txt" : Outut file as an optional
+     file path for the output samples. One sample saved per line.
     """
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
     enc = encoder.get_encoder(model_name)
     hparams = model.default_hparams()
     with open(os.path.join('models', model_name, 'hparams.json')) as f:

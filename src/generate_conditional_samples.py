@@ -43,13 +43,15 @@ def sample_model(
      overriding top_k if set to a value > 0. A good setting is 0.9.
     :input_file=None : Input file as a path to a text file with each line 
      containing context string for the model to generate upon. Must be provided
-    :output_file="conditional_sample_output.txt" : Outut file as an optional
+    :output_file="output.txt" : Outut file as an optional
      file path for the output samples. One sample saved per line.
      """
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
     if os.path.isfile(input_file) == False:
         if input_file is None:
-            raise ValueError("Specificy Input")
+            raise ValueError("Specify Input")
         else:
             raise ValueError("Invalid Input")
 

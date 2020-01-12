@@ -3,6 +3,7 @@
 import fire
 import json
 import os
+import re
 import numpy as np
 import tensorflow as tf
 
@@ -38,6 +39,9 @@ def interact_model(
     :top_p=0.0 : Float value controlling diversity. Implements nucleus sampling,
      overriding top_k if set to a value > 0. A good setting is 0.9.
     """
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
     if batch_size is None:
         batch_size = 1
     assert nsamples % batch_size == 0
@@ -68,10 +72,10 @@ def interact_model(
         saver.restore(sess, ckpt)
 
         while True:
-            raw_text = input("Model prompt >>> ")
+            raw_text = input("Initial Line >>> ")
             while not raw_text:
-                print('Prompt should not be empty!')
-                raw_text = input("Model prompt >>> ")
+                print('Prompt cannot not be empty!')
+                raw_text = input("Initial Line >>> ")
             context_tokens = enc.encode(raw_text)
             generated = 0
             for _ in range(nsamples // batch_size):
@@ -80,8 +84,8 @@ def interact_model(
                 })[:, len(context_tokens):]
                 for i in range(batch_size):
                     generated += 1
-                    text = enc.decode(out[i])
-                    print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
+                    text = str(enc.decode(out[i]))
+                    text = re.sub(r"([^A-Za-z\s\n,'-.;]+)", '', text)
                     print(text)
             print("=" * 80)
 
