@@ -3,6 +3,7 @@
 import fire
 import json
 import os
+import re
 import numpy as np
 import tensorflow as tf
 
@@ -17,8 +18,8 @@ def sample_model(
     temperature=1,
     top_k=0,
     top_p=0.0,
-    input_file="conditional_sample_input.txt",
-    output_file="conditional_sample_output.txt"
+    input_file="input.txt",
+    output_file="output.txt"
 ):
     """
     Run the sample_model
@@ -82,18 +83,16 @@ def sample_model(
 
         with open(input_file) as f:
             for line in f:
-                output_file.write("=" * 79)
-                output_file.write(line + "\n")
+                output_file.write("=" * 79 + "\n")
+                output_file.write(line)
                 context_tokens = enc.encode(line)
                 for _ in range(nsamples // batch_size):
                     out = sess.run(output, feed_dict={
                         context: [context_tokens for _ in range(batch_size)]
                     })[:, len(context_tokens):]
                     for i in range(batch_size):
-                        text = enc.decode(out[i])
-                        text = str(text)
-                        text = re.sub (r'([^a-zA-Z ]+?)', '', text)
-                        output_file.write(text + "\n")
+                        text = str(enc.decode(out[i]))
+                        output_file.write(re.sub(r"([^A-Za-z\s\n,'-.;]+)", '', text) + "\n")
         
         output_file.close()
 

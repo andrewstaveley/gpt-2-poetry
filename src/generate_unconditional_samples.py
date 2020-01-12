@@ -3,6 +3,7 @@
 import fire
 import json
 import os
+import re
 import numpy as np
 import tensorflow as tf
 
@@ -11,12 +12,13 @@ import model, sample, encoder
 def sample_model(
     model_name='117M',
     seed=None,
-    nsamples=0,
+    nsamples=1,
     batch_size=1,
     length=None,
     temperature=1,
     top_k=0,
-    top_p=0.0
+    top_p=0.0,
+    output_file="unconditional_output.txt"
 ):
     """
     Run the sample_model
@@ -64,14 +66,17 @@ def sample_model(
         ckpt = tf.train.latest_checkpoint(os.path.join('models', model_name))
         saver.restore(sess, ckpt)
 
+        output_file = open(output_file,"w+")
+
         generated = 0
         while nsamples == 0 or generated < nsamples:
             out = sess.run(output)
             for i in range(batch_size):
+                output_file.write("=" * 79 + "\n")
                 generated += batch_size
-                text = enc.decode(out[i])
-                print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
-                print(text)
+                text = str(enc.decode(out[i]))
+                output_file.write(re.sub(r"([^A-Za-z\s\n,'-.;]+)", '', text) + "\n")
+                print("=" * 40 + "COMPLETED " + str(generated) + " " + "=" * 40)
 
 if __name__ == '__main__':
     fire.Fire(sample_model)
