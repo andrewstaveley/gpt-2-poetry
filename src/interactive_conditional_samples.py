@@ -86,8 +86,9 @@ def interact_model(
                     generated += 1
                     text = str(enc.decode(out[i]))
                     text = re.sub(r"([^A-Za-z\s\n,'-.;]+)", '', text)
+                    print("=" * 20)
                     print(text)
-            print("=" * 80)
+            print("=" * 20)
 
 if __name__ == '__main__':
     fire.Fire(interact_model)
