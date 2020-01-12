@@ -76,7 +76,6 @@ def sample_model(
                 generated += batch_size
                 text = str(enc.decode(out[i]))
                 output_file.write(re.sub(r"([^A-Za-z\s\n,'-.;]+)", '', text) + "\n")
-                print("=" * 40 + "COMPLETED " + str(generated) + " " + "=" * 40)
 
 if __name__ == '__main__':
     fire.Fire(sample_model)
